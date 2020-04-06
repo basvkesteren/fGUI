@@ -120,7 +120,8 @@ void fgui_lineh(const unsigned int x, const unsigned int y, unsigned int l)
   Draw a horizontal line starting at location x,y with length l.
 */
 {
-    int i;
+    unsigned int i;
+    unsigned char bitmask;
 
     /* Sanity check */
     if(x > FGUI_SCR_W || y > FGUI_SCR_H) {
@@ -135,16 +136,23 @@ void fgui_lineh(const unsigned int x, const unsigned int y, unsigned int l)
         fgui.fb[y*FGUI_SCR_BYTEW + i] = fgui.fgcolor;
     }
     /* ..then the leftover bits at the beginning of the line.. */
-    if(x%8) {
-        if(fgui.fgcolor == FGUI_BLACK) {
-            fgui.fb[y*FGUI_SCR_BYTEW + bitstobytesdown(x)] |= (fgui.fgcolor>>(x%8))&0xFF;
+    if(x%8) { 
+        if(x%8 + l < 8) {
+            bitmask = (0xFF >> x%8) & (0xFF<<(8-((x%8)+l)));
         }
         else {
-            fgui.fb[y*FGUI_SCR_BYTEW + bitstobytesdown(x)] &= ~(fgui.fgcolor>>(x%8))&0xFF;
+            bitmask=0xFF;
+        }
+
+        if(fgui.fgcolor == FGUI_BLACK) {
+            fgui.fb[y*FGUI_SCR_BYTEW + bitstobytesdown(x)] |= (fgui.fgcolor>>(x%8))&bitmask;
+        }
+        else {
+            fgui.fb[y*FGUI_SCR_BYTEW + bitstobytesdown(x)] &= ~(fgui.fgcolor>>(x%8))&bitmask;
         }
     }
     /* ..and finally, leftover bits at the end of the line */
-    if((x+l)%8) {
+    if((x+l)%8 && (x%8 == 0 || (x%8)+l>8)) {
         if(fgui.fgcolor == FGUI_BLACK) {
             fgui.fb[y*FGUI_SCR_BYTEW + bitstobytesdown(x+l)] |= (fgui.fgcolor<<(8-((x+l)%8)))&0xFF;
         }
@@ -160,7 +168,7 @@ void fgui_linev(const unsigned int x, const unsigned int y, unsigned int l)
 */
 {
     unsigned char b;
-    int yn;
+    unsigned int yn;
 
     /* Sanity check */
     if(x > FGUI_SCR_W || y > FGUI_SCR_H) {

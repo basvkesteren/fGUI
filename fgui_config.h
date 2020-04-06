@@ -12,17 +12,8 @@
 #ifndef _FGUI_CONFIG_H_
 #define _FGUI_CONFIG_H_
 
-#ifndef FALSE
-#define FALSE       0
-#endif
-
-#ifndef TRUE
-#define TRUE        1
-#endif
-
-typedef unsigned char bool;
-
-#include "hw/ws2812.h"
+/* Include hardware driver */
+#include "hw/ks0108.h"
 
 typedef signed short fgui_location;
 

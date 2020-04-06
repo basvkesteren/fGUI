@@ -39,6 +39,16 @@ void fgui_setfont(const unsigned char *newfont)
     fgui.font.pixeldata = (unsigned char *)&newfont[2];
 }
 
+unsigned char fgui_charheight()
+{
+    return fgui.font.h;
+}
+
+unsigned char fgui_charwidth()
+{
+    return fgui.font.w;
+}
+
 void fgui_char(const int x, const int y, const char c)
 /*
   Place a single character at given location.

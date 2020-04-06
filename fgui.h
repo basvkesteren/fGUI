@@ -45,6 +45,8 @@ void fgui_sprite(const int x, const int y, const unsigned char *sprite);
 
 /* Text functions */
 void fgui_setfont(const unsigned char *font);
+unsigned char fgui_charheight(void);
+unsigned char fgui_charwidth(void);
 void fgui_char(const int x, const int y, const char c);
 void fgui_text(int x, const int y, const char *str);
 unsigned int fgui_strlen(char *str);

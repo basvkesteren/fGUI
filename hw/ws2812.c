@@ -12,7 +12,7 @@
 #include "ws2812.h"
 #include "delay.h"
 #include "io.h"
-#include "fgui_config.h"
+#include "../fgui_config.h"
 
 static unsigned char red, green, blue;
 static unsigned char red_off, green_off, blue_off;

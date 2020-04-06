@@ -2,7 +2,7 @@
     FemtoGUI
 
     screen_uart.h:
-        screen driver whit the UART as output (for testing purposes)
+        screen driver with the UART as output (for testing purposes)
 
     copyright:
               Copyright (c) 2006-2007 Bastiaan van Kesteren <bastiaanvankesteren@gmail.com>

@@ -10,6 +10,7 @@
     version 2 of the License, or (at your option) any later version.
 */
 #include "ssd1322.h"
+#include "../fgui_config.h"
 
 #include <ssp.h>
 #include <delay.h>
@@ -43,6 +44,7 @@
 #define SSD1322_CMD_ENHANCEMENT_B       0xD1
 #define SSD1322_CMD_LOCK                0xFD
 
+/* As defined in hardware/io.h */
 #define ssd1322_pin_select()            DISPLAY_CS_ACTIVATE()
 #define ssd1322_pin_deselect()          DISPLAY_CS_DEACTIVATE()
 #define ssd1322_pin_command()           DISPLAY_COMMAND()
@@ -93,27 +95,27 @@ char ssd1322_init()
     ssd1322_data(0x00);     // Startline 0
 
     ssd1322_cmd(SSD1322_CMD_REMAP);
-    ssd1322_data(0x14); // Horizontal address increment, enable column and nibble re-map, scan from COM[N-1] - COM0, disable COM split odd even
-    ssd1322_data(0x11); // Dual COM mode
+    ssd1322_data(0x14);     // Horizontal address increment, enable column and nibble re-map, scan from COM[N-1] - COM0, disable COM split odd even
+    ssd1322_data(0x11);     // Dual COM mode
 
     ssd1322_cmd(SSD1322_CMD_GPIO);
     ssd1322_data(0x00);     // Disable GPIO
 
     ssd1322_cmd(SSD1322_CMD_VDD);
-    ssd1322_data(0x01); // Enable internal VDD regulator
+    ssd1322_data(0x01);     // Enable internal VDD regulator
 
     ssd1322_cmd(SSD1322_CMD_ENHANCEMENT_A);
-    ssd1322_data(0xA0); // External VSL
-    ssd1322_data(0xFD); // Enhanced low grayscale display
+    ssd1322_data(0xA0);     // External VSL
+    ssd1322_data(0xFD);     // Enhanced low grayscale display
 
     ssd1322_cmd(SSD1322_CMD_CONTRAST_CURRENT);
-    ssd1322_data(0xFF); // Set contrast current, full
+    ssd1322_data(0xFF);     // Set contrast current, full
 
     ssd1322_cmd(SSD1322_CMD_CONTRAST_MASTER);
-    ssd1322_data(0x0F); // Set master contrast, full
+    ssd1322_data(0x0F);     // Set master contrast, full
 
     ssd1322_cmd(SSD1322_CMD_GRAYSCALE_TABLE);
-    ssd1322_data(0x00); // Gamma Setting for GS1
+    ssd1322_data(0x00);     // Gamma Setting for GS1
     ssd1322_data(0x00);
     ssd1322_data(0x00);
     ssd1322_data(0x03);
@@ -127,41 +129,41 @@ char ssd1322_init()
     ssd1322_data(0x6A);
     ssd1322_data(0x7F);
     ssd1322_data(0x96);
-    ssd1322_data(0xB4); // Gamma Setting for GS15
+    ssd1322_data(0xB4);     // Gamma Setting for GS15
 
     ssd1322_cmd(SSD1322_CMD_PHASE);
-    ssd1322_data(0xE8); // Phase 1 = 13 DCLK's, phase 2 = 14 DCLK's
+    ssd1322_data(0xE8);     // Phase 1 = 13 DCLK's, phase 2 = 14 DCLK's
 
     ssd1322_cmd(SSD1322_CMD_ENHANCEMENT_B);
-    ssd1322_data(0x82); // Normal
+    ssd1322_data(0x82);     // Normal
     ssd1322_data(0x20);
 
     ssd1322_cmd(SSD1322_CMD_PRECHARGE);
-    ssd1322_data(0x1F); // Pre-charge voltage = 0.6xVcc
+    ssd1322_data(0x1F);     // Pre-charge voltage = 0.6xVcc
 
     ssd1322_cmd(SSD1322_CMD_2ND_PRECHARGE);
-    ssd1322_data(0x08); // 2nd pre-charge period =8 DCLK's
+    ssd1322_data(0x08);     // 2nd pre-charge period =8 DCLK's
 
     ssd1322_cmd(SSD1322_CMD_VCOM);
-    ssd1322_data(0x7); // COM deselect voltage = 0.86xVCC
+    ssd1322_data(0x7);      // COM deselect voltage = 0.86xVCC
 
     ssd1322_cmd(SSD1322_CMD_EXIT_PARTIAL_MODE);
 
     ssd1322_cmd(SSD1322_CMD_MODE_NORMAL);
 
-    delay_ms(1);    //stabilize VDD
+    delay_ms(1);            //stabilize VDD
 
     ssd1322_cmd(SSD1322_CMD_DISPLAY_ON);
 
-    delay_ms(200);    //stabilize VDD
+    delay_ms(200);          //stabilize VDD
 
     ssd1322_cmd(SSD1322_CMD_COLUMN_ADDRESS);
-    ssd1322_data(0x1C); // Start column
-    ssd1322_data(0x5B); // Stop column
+    ssd1322_data(0x1C);     // Start column
+    ssd1322_data(0x5B);     // Stop column
 
     ssd1322_cmd(SSD1322_CMD_ROW_ADDRESS);
-    ssd1322_data(0x00); // Start row
-    ssd1322_data(0x3F); // Stop row
+    ssd1322_data(0x00);     // Start row
+    ssd1322_data(0x3F);     // Stop row
 
     return 1;
 }

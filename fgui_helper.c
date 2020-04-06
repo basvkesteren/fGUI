@@ -51,7 +51,7 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
 {
     unsigned int pixeldata_skip_h, pixeldata_skip_w;
     unsigned char bitmask_left, bitmask_right, bitmask_leftovers;
-    unsigned int i_h, i_w;
+    int i_h, i_w;
 
     /* Cleanup y/h parameters */
     if(y < 0) {
@@ -64,7 +64,7 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
         pixeldata_skip_h = 0;
     }
     if(y + h > FGUI_SCR_H) {
-        /* Make sure we won't write beond the framebuffer by skipping lower rows of pixeldata */
+        /* Make sure we won't write beyond the framebuffer by skipping lower rows of pixeldata */
     	h = FGUI_SCR_H-y;
     }
 
@@ -79,7 +79,7 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
         pixeldata_skip_w = 0;
     }
     if(x+w > FGUI_SCR_W) {
-        /* Make sure we won't write beond the framebuffer by skipping right colums of pixeldata */
+        /* Make sure we won't write beyond the framebuffer by skipping right colums of pixeldata */
     	w = FGUI_SCR_W-x;
     }
 
