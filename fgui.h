@@ -26,7 +26,8 @@
 /* General functions */
 char fgui_init(unsigned char *framebuffer);
 void fgui_clear(void);
-void fgui_clearregion(const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h);
+void fgui_clearregion(int x, int y, unsigned int w, unsigned int h);
+void fgui_fillregion(int x, int y, unsigned int w, unsigned int h);
 char fgui_refresh(void);
 void fgui_setcolor(const unsigned char newcolor);
 
@@ -36,7 +37,7 @@ void fgui_pixeloff(const unsigned int x, const unsigned int y);
 void fgui_pixel(const unsigned int x, const unsigned int y, const unsigned char value);
 
 /* Line functions */
-void fgui_line(int x0,int y0,int x1,int y1);
+void fgui_line(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1);
 void fgui_lineh(const unsigned int x, const unsigned int y, unsigned int l);
 void fgui_linev(const unsigned int x, const unsigned int y, unsigned int l);
 
@@ -47,8 +48,8 @@ void fgui_sprite(const int x, const int y, const unsigned char *sprite);
 void fgui_setfont(const unsigned char *font);
 unsigned char fgui_charheight(void);
 unsigned char fgui_charwidth(void);
+unsigned int fgui_strlen(char *s);
 void fgui_char(const int x, const int y, const char c);
 void fgui_text(int x, const int y, const char *str);
-unsigned int fgui_strlen(char *str);
 
 #endif /* FGUI_H */

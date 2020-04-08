@@ -43,7 +43,7 @@ void fgui_clear()
 
     /* clear the buffer */
     for(i=0;i<FGUI_FBSIZE;i++) {
-        fgui.fb[i]=0;
+        fgui.fb[i]=~fgui.fgcolor;
     }
 }
 

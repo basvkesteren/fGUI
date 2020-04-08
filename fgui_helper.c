@@ -23,7 +23,7 @@
 extern fgui_t fgui;
 
 unsigned int bitstobytesup(const unsigned int bits)
-/*!
+/*
   Give no. of bytes needed for the given no. of bits, rounding up
 */
 {
@@ -37,14 +37,27 @@ unsigned int bitstobytesup(const unsigned int bits)
 }
 
 unsigned int bitstobytesdown(const unsigned int bits)
-/*!
+/*
   Give no. of bytes needed for the given no. of bits, ignoring remainders
 */
 {
     return bits>>3;
 }
 
-void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, unsigned int bytew)
+static unsigned char getpixelbyte(const unsigned char *pixeldata, int location, unsigned char fgcolor)
+/*
+  Return byte from pixeldata[location], inverted if fgcolor != FGUI_BLACK
+*/
+{
+    if(fgcolor) {
+        return pixeldata[location];
+    }
+    else {
+        return ~pixeldata[location];
+    }
+}
+
+void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, unsigned int bytew, unsigned char fgcolor)
 /*
   Copy 'pixeldata' with width 'w' and height 'h' (both in pixels/bits) to framebuffer-location x/y, where both x and y can be negative
 */
@@ -101,8 +114,8 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
                 /* Height/row loop. Per row, copy all complete bytes */
                 for(i_w=0;i_w<w>>3;i_w++) {
                     /* Width/column loop. Copy all complete bytes (w=0 to w/8) */
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] = (pixeldata[((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w] << (pixeldata_skip_w%8)) |
-                                                                           (pixeldata[((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w + 1] >> (8-(pixeldata_skip_w%8)));
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] = (getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w, fgcolor) << (pixeldata_skip_w%8)) |
+                                                                           (getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w + 1, fgcolor) >> (8-(pixeldata_skip_w%8)));
                 }
             }
         }
@@ -116,8 +129,8 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
                 for(i_h=0;i_h<h;i_h++) {
                     /* Height/row loop. Per row, copy the leftover byte (the last column, at w/8) */
                     fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] &= ~bitmask_leftovers;
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= ((pixeldata[((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w] << (pixeldata_skip_w%8)) |
-                                                                            (pixeldata[((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w + 1] >> (8-(pixeldata_skip_w%8)))) & bitmask_leftovers;
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= ((getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w, fgcolor) << (pixeldata_skip_w%8)) |
+                                                                            (getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w + 1, fgcolor) >> (8-(pixeldata_skip_w%8)))) & bitmask_leftovers;
                 }
             }
             else {
@@ -128,7 +141,7 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
                 for(i_h=0;i_h<h;i_h++) {
                     /* Height/row loop. Per row, copy the leftover byte (the last column, at w/8) */
                     fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] &= ~bitmask_leftovers;
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= (pixeldata[((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w] << (pixeldata_skip_w%8)) & bitmask_leftovers;
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= (getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w + 1, fgcolor) << (pixeldata_skip_w%8)) & bitmask_leftovers;
                 }
             }
         }
@@ -145,7 +158,7 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
                 /* Height/row loop. Per row, copy all complete bytes */
                 for(i_w=0;i_w<w>>3;i_w++) {
                     /* Width/column loop. Copy all complete bytes (w=0 to w/8) */
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] = pixeldata[((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w];
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] = getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w + 1, fgcolor);
                 }
             }
         }
@@ -157,7 +170,7 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
             for(i_h=0;i_h<h;i_h++) {
                 /* Height/row loop. Per row, copy the leftover byte (the last column, at w/8) */
                 fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] &= ~bitmask_leftovers;
-                fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= pixeldata[((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w];
+                fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + (pixeldata_skip_w>>3) + i_w, fgcolor);
             }
         }
     }
@@ -177,10 +190,10 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
                 for(i_w=0;i_w<w>>3;i_w++) {
                     /* Width/column loop. Copy all complete bytes (w=0 to w/8) */
                     fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] &= ~bitmask_right;
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= pixeldata[((i_h + pixeldata_skip_h) * bytew) + i_w] >> (x%8);
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + i_w, fgcolor) >> (x%8);
 
                     fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w + 1] &= ~bitmask_left;
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w + 1] |= pixeldata[((i_h + pixeldata_skip_h) * bytew) + i_w] << (8-(x%8));
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w + 1] |= getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + i_w, fgcolor) << (8-(x%8));
                 }
             }
         }
@@ -195,7 +208,7 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
                 for(i_h=0;i_h<h;i_h++) {
                     /* Height/row loop. Per row, copy the leftover byte (the last column, at w/8) */
                     fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] &= ~bitmask_leftovers;
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= (pixeldata[((i_h + pixeldata_skip_h) * bytew) + i_w] >> (x%8)) & bitmask_leftovers;
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= (getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + i_w, fgcolor) >> (x%8)) & bitmask_leftovers;
                 }
             }
             else {
@@ -208,12 +221,11 @@ void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, u
                 for(i_h=0;i_h<h;i_h++) {
                     /* Height/row loop. Per row, copy the leftover byte (the last column, at w/8) */
                     fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] &= ~bitmask_right;
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= pixeldata[((i_h + pixeldata_skip_h) * bytew) + i_w] >> (x%8);
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w] |= getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + i_w, fgcolor) >> (x%8);
 
                     fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w + 1] &= ~bitmask_leftovers;
-                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w + 1] |= (pixeldata[((i_h + pixeldata_skip_h) * bytew) + i_w] << (8-(x%8))) & bitmask_leftovers;
+                    fgui.fb[((y + i_h) * FGUI_SCR_BYTEW) + (x>>3) + i_w + 1] |= (getpixelbyte(pixeldata, ((i_h + pixeldata_skip_h) * bytew) + i_w, fgcolor) << (8-(x%8))) & bitmask_leftovers;
                 }
-
             }
         }
     }

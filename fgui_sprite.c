@@ -32,5 +32,5 @@ void fgui_sprite(const int x, const int y, const unsigned char *sprite)
    4-n  The actual pixel data
 */
 {
-    copypixeldata(x, y, &sprite[4], (sprite[0]<<8) | sprite[1], (sprite[2]<<8) | sprite[3], bitstobytesup((sprite[0]<<8) | sprite[1]));
+    copypixeldata(x, y, &sprite[4], (sprite[0]<<8) | sprite[1], (sprite[2]<<8) | sprite[3], bitstobytesup((sprite[0]<<8) | sprite[1]), fgui.fgcolor);
 }

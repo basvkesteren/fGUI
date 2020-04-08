@@ -16,7 +16,6 @@
 
 */
 #include "fgui.h"
-#include <string.h>
 
 #define FGUI_CODE
 #include "fgui_helper.h"
@@ -40,26 +39,47 @@ void fgui_setfont(const unsigned char *newfont)
 }
 
 unsigned char fgui_charheight()
+/*
+  Height of active font, in pixels
+*/
 {
     return fgui.font.h;
 }
 
 unsigned char fgui_charwidth()
+/*
+  Width of a single character from the active font, in pixels
+*/
 {
     return fgui.font.w;
 }
 
-void fgui_char(const int x, const int y, const char c)
+unsigned int fgui_strlen(char *s)
 /*
-  Place a single character at given location.
+  Get length of given string, in pixels
 */
 {
-    copypixeldata(x, y, &fgui.font.pixeldata[(c-32) * (fgui.font.h * fgui.font.bytew)], fgui.font.w, fgui.font.h, fgui.font.bytew);
+    int length=0;
+
+    while(*s) {
+        s++;
+        length++;
+    }
+
+    return length * fgui.font.w;
+}
+
+void fgui_char(const int x, const int y, const char c)
+/*
+  Place a single character at given location
+*/
+{
+    copypixeldata(x, y, &fgui.font.pixeldata[(c-32) * (fgui.font.h * fgui.font.bytew)], fgui.font.w, fgui.font.h, fgui.font.bytew, fgui.fgcolor);
 }
 
 void fgui_text(int x, const int y, const char *str)
 /*
-  Place a NULL terminated string at the given location.
+  Place a NULL terminated string at the given location
 */
 {
     while(*str) {
@@ -67,12 +87,4 @@ void fgui_text(int x, const int y, const char *str)
         x += fgui.font.w;
         str++;
     }
-}
-
-unsigned int fgui_strlen(char *str)
-/*
-  Get length of string, in pixels
-*/
-{
-    return strlen(str) * fgui.font.w;
 }

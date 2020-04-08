@@ -23,11 +23,11 @@
 
 extern fgui_t fgui;
 
-static void fgui_line_low(int x0,int y0,int x1,int y1)
+static void fgui_line_low(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1)
 {
     int deltax, deltay, yincrement;
     int error;
-    int x,y;
+    unsigned int x,y;
 
     deltax = x1 - x0;
     deltay = y1 - y0;
@@ -52,11 +52,11 @@ static void fgui_line_low(int x0,int y0,int x1,int y1)
     }
 }
 
-static void fgui_line_high(int x0,int y0,int x1,int y1)
+static void fgui_line_high(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1)
 {
     int deltax, deltay, xincrement;
     int error;
-    int x,y;
+    unsigned int x,y;
 
     deltax = x1 - x0;
     deltay = y1 - y0;
@@ -88,7 +88,7 @@ int abs(int j)
 }
 #endif
 
-void fgui_line(int x0,int y0,int x1,int y1)
+void fgui_line(const unsigned int x0, const unsigned int y0, const unsigned int x1, const unsigned int y1)
 /*
   Draw a line from x0,y0 to x1,y1. For straight (horizontal or vertical) lines,
   use fgui_lineh/fgui_linev; those are faster.
@@ -117,7 +117,7 @@ void fgui_line(int x0,int y0,int x1,int y1)
 
 void fgui_lineh(const unsigned int x, const unsigned int y, unsigned int l)
 /*
-  Draw a horizontal line starting at location x,y with length l.
+  Draw a horizontal line starting at location x,y with length l
 */
 {
     unsigned int i;
@@ -164,7 +164,7 @@ void fgui_lineh(const unsigned int x, const unsigned int y, unsigned int l)
 
 void fgui_linev(const unsigned int x, const unsigned int y, unsigned int l)
 /*
-  Draw a vertical line starting at location x,y with length l.
+  Draw a vertical line starting at location x,y with length l
 */
 {
     unsigned char b;

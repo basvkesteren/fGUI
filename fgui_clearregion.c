@@ -22,13 +22,30 @@
 
 extern fgui_t fgui;
 
-void fgui_clearregion(const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h)
+void fgui_clearregion(int x, int y, unsigned int w, unsigned int h)
 /*
-  Clear a region of the framebuffer at location x,y, with width 'w' and height 'h'.
+  Clear a region of the framebuffer at location x,y, with width 'w' and height 'h'
 */
 {
     unsigned int cw,ch,bytew,bytestart;
     unsigned char bitmask;
+
+    /* Sanity check */
+    if(x > FGUI_SCR_W || y > FGUI_SCR_H) {
+        return;
+    }
+    if(x < 0) {
+        x = 0;
+    }
+    if(y < 0) {
+        y = 0;
+    }
+    if(x + w > FGUI_SCR_W) {
+        w = FGUI_SCR_W - x;
+    }
+    if(y + h > FGUI_SCR_H) {
+        h = FGUI_SCR_H - y;
+    }
 
     /* There are two main-cases here: byte aligned and non-byte aligned regions */
     if(x%8 > 0) {
@@ -51,17 +68,29 @@ void fgui_clearregion(const unsigned int x, const unsigned int y, const unsigned
     bytew=bitstobytesdown(w);
     for(ch=0;ch<h;ch++) {
         for(cw=bytestart;cw<bytew;cw++) {
-            fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bitstobytesdown(x)+cw] = 0;
+            fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bitstobytesdown(x)+cw] = ~fgui.fgcolor;
         }
     }
 
     /* Right now all whole bytes of the region are cleared;
-       if there are some bits left, we clear them here. */
+       if there are some bits left, we clear them here */
     if((x+w)%8) {
-        bitmask = ~(0xff<<(8-((x+w)%8)));
+        bitmask = ~(fgui.fgcolor<<(8-((x+w)%8)));
         bytestart = bitstobytesdown(x+w);
         for(ch=0;ch<h;ch++) {
             fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bytestart] &= bitmask;
         }
     }
+}
+
+void fgui_fillregion(int x, int y, unsigned int w, unsigned int h)
+/*
+  Fill a region of the framebuffer at location x,y, with width 'w' and height 'h'
+*/
+{
+    fgui.fgcolor = ~fgui.fgcolor;
+
+    fgui_clearregion(x, y, w, h);
+
+    fgui.fgcolor = ~fgui.fgcolor;
 }

@@ -40,6 +40,6 @@ typedef struct {
 
 unsigned int bitstobytesup(const unsigned int bits);
 unsigned int bitstobytesdown(const unsigned int bits);
-void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, unsigned int bytew);
+void copypixeldata(int x, int y, const unsigned char *pixeldata, int w, int h, unsigned int bytew, unsigned char fgcolor);
 
 #endif /* FGUI_HELPER_H */
