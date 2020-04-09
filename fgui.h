@@ -30,6 +30,7 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h);
 void fgui_fillregion(int x, int y, unsigned int w, unsigned int h);
 char fgui_refresh(void);
 void fgui_setcolor(const unsigned char newcolor);
+void fgui_invertcolor(void);
 
 /* Pixel functions */
 void fgui_pixelon(const unsigned int x, const unsigned int y);
@@ -43,6 +44,8 @@ void fgui_linev(const unsigned int x, const unsigned int y, unsigned int l);
 
 /* Sprite functions */
 void fgui_sprite(const int x, const int y, const unsigned char *sprite);
+int fgui_spritewidth(const unsigned char *sprite);
+int fgui_spriteheight(const unsigned char *sprite);
 
 /* Text functions */
 void fgui_setfont(const unsigned char *font);

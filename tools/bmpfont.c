@@ -68,7 +68,7 @@ int main(int argc,char **argv)
 
     char *inputfile,*outputfile;
     unsigned int charspacing_pixels, charwidth_pixels;
-    unsigned int charheigth_pixels, fontwidth_pixels;
+    unsigned int charheight_pixels, fontwidth_pixels;
     unsigned int imagewidth_bytes;
     unsigned int currentchar_startbyte, currentchar_lastbyte;
 
@@ -116,9 +116,9 @@ int main(int argc,char **argv)
     }
 
     /* Make sure the font will fit in the inputfile with the given settings */
-    charheigth_pixels = infoheader.height;
+    charheight_pixels = infoheader.height;
     fontwidth_pixels = ((ASCII_READABLE_CHARS - 2) * charspacing_pixels) + (ASCII_READABLE_CHARS * charwidth_pixels);
-    printf("Character width %i, height %i, spacing %i\n", charwidth_pixels, charheigth_pixels, charspacing_pixels);
+    printf("Character width %i, height %i, spacing %i\n", charwidth_pixels, charheight_pixels, charspacing_pixels);
     printf("Expect %d characters in bitmap, should be %d pixels width\n", ASCII_READABLE_CHARS, fontwidth_pixels);
     if(infoheader.width < fontwidth_pixels) {
         printf("Imagefile is too small, font won't fit\n");
@@ -155,7 +155,7 @@ int main(int argc,char **argv)
     }
 
     /* Figure out how much memory is needed for one char, and allocate it */
-    chardata = malloc(bitstobytes(charwidth_pixels) * charheigth_pixels);
+    chardata = malloc(bitstobytes(charwidth_pixels) * charheight_pixels);
     if(chardata == NULL) {
         printf("Not enough memory to store a single character\n");
         return 0;
@@ -165,11 +165,11 @@ int main(int argc,char **argv)
     fwrite(outputheader, sizeof(unsigned char), strlen(outputheader), fptr);
     sprintf(linebuffer,"#ifndef FONT_H\n#define FONT_H\n\n");
     fwrite(linebuffer, sizeof(unsigned char), strlen(linebuffer), fptr);
-    sprintf(linebuffer,"static const unsigned char font[%i + 2] = {\n", ASCII_READABLE_CHARS * (charheigth_pixels * bitstobytes(charwidth_pixels)));
+    sprintf(linebuffer,"static const unsigned char font[%i + 2] = {\n", ASCII_READABLE_CHARS * (charheight_pixels * bitstobytes(charwidth_pixels)));
     fwrite(linebuffer, sizeof(unsigned char), strlen(linebuffer), fptr);
     sprintf(linebuffer,"    %i, /* Character width in pixels */\n", charwidth_pixels);
     fwrite(linebuffer, sizeof(unsigned char), strlen(linebuffer), fptr);
-    sprintf(linebuffer,"    %i, /* Character height in pixels */\n", charheigth_pixels);
+    sprintf(linebuffer,"    %i, /* Character height in pixels */\n", charheight_pixels);
     fwrite(linebuffer, sizeof(unsigned char), strlen(linebuffer), fptr);
 
     /* Parse pixeldata, one character per loop */

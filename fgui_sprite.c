@@ -34,3 +34,13 @@ void fgui_sprite(const int x, const int y, const unsigned char *sprite)
 {
     copypixeldata(x, y, &sprite[4], (sprite[0]<<8) | sprite[1], (sprite[2]<<8) | sprite[3], bitstobytesup((sprite[0]<<8) | sprite[1]), fgui.fgcolor);
 }
+
+int fgui_spritewidth(const unsigned char *sprite)
+{
+    return (sprite[0]<<8) | sprite[1];
+}
+
+int fgui_spriteheight(const unsigned char *sprite)
+{
+    return (sprite[2]<<8) | sprite[3];
+}

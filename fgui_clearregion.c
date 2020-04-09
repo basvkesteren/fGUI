@@ -50,11 +50,16 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h)
     /* There are two main-cases here: byte aligned and non-byte aligned regions */
     if(x%8 > 0) {
         /* Region is not byte-aligned with the framebuffer, bitshifting is needed */
-        bitmask = ~(0xff>>(x%8));
-
-        /* Right; so we first clear the left part of this region */
-        for(ch=0;ch<h;ch++) {
-            fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bitstobytesdown(x)] &= bitmask;
+        bitmask = (FGUI_BLACK>>(x%8));
+        if(fgui.fgcolor == FGUI_BLACK) {
+            for(ch=0;ch<h;ch++) {
+                fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bitstobytesdown(x)] &= ~bitmask;
+            }
+        }
+        else {
+            for(ch=0;ch<h;ch++) {
+                fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bitstobytesdown(x)] |= bitmask;
+            }
         }
         /* For the remaining part, we only set the startingpoint; the actual copying is done later */
         bytestart=1;
@@ -75,10 +80,17 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h)
     /* Right now all whole bytes of the region are cleared;
        if there are some bits left, we clear them here */
     if((x+w)%8) {
-        bitmask = ~(fgui.fgcolor<<(8-((x+w)%8)));
         bytestart = bitstobytesdown(x+w);
-        for(ch=0;ch<h;ch++) {
-            fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bytestart] &= bitmask;
+        bitmask = FGUI_BLACK<<(8-((x+w)%8));
+        if(fgui.fgcolor == FGUI_BLACK) {
+            for(ch=0;ch<h;ch++) {
+                fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bytestart] &= ~bitmask;
+            }
+        }
+        else {    
+            for(ch=0;ch<h;ch++) {
+                fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bytestart] |= bitmask;
+            }
         }
     }
 }

@@ -25,7 +25,7 @@ fgui_t fgui;
 char fgui_init(unsigned char *framebuffer)
 /*
   Set console parameters and initialise the screen by calling screen_init().
-  Returncode is the result of screen_init(), which should be '1' on success.
+  Returncode is the result of screen_init(), which should be '1' on success
 */
 {
     fgui.fb = framebuffer;
@@ -50,7 +50,7 @@ void fgui_clear()
 char fgui_refresh()
 /*
   Update screen (as in, write contents of buffer to the screen).
-  Returncode is the result of screen_update(), which should be '1' on success.
+  Returncode is the result of screen_update(), which should be '1' on success
 */
 {
     return screen_update(fgui.fb);
@@ -58,12 +58,20 @@ char fgui_refresh()
 
 void fgui_setcolor(const unsigned char newcolor)
 /*
-  Set the foregroundcolor to use.
+  Set the foregroundcolor to use
 */
 {
     if(newcolor == FGUI_BLACK || newcolor == FGUI_WHITE) {
         fgui.fgcolor = newcolor;
     }
+}
+
+void fgui_invertcolor()
+/*
+  Invert colors
+*/
+{
+    fgui.fgcolor = ~fgui.fgcolor;
 }
 
 /*

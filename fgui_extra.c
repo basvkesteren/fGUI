@@ -64,6 +64,7 @@ char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char 
     int x, y;
 
     if(fgui_printbuffer && fgui_printbufferlength) {
+        /* Get text-string */
         va_list argpointer;
         va_start(argpointer, fmt);
 
@@ -71,6 +72,7 @@ char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char 
 
         va_end(argpointer);
 
+        /* Determine x/y location */
         switch(alignment) {
             case fgui_left:
                 x=0;
@@ -98,10 +100,11 @@ char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char 
         }
         y=line*fgui_charheight();
         
+        /* Print text on screen */
         if(invert) {
             fgui.fgcolor = ~fgui.fgcolor;
         }
-        fgui_clearregion(x, y, FGUI_SCR_W, fgui_charheight());
+        fgui_clearregion(0, y, FGUI_SCR_W, fgui_charheight());
         fgui_text(x, y, fgui_printbuffer);
         if(invert) {
             fgui.fgcolor = ~fgui.fgcolor;
@@ -111,6 +114,44 @@ char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char 
     }
     return 0;
 }
+
+int fgui_printblock(int y, char *text, unsigned int start, char showscrollbar)
+/*
+  Print a block of text (text[start]) starting at x/y location 0/y.
+  When 'showscrollbar' > 0 a scrollbar is drawn at the right side of the screen.
+  Index of the next char to print is returned.
+*/
+{
+    unsigned int i,x,w;
+
+    if(showscrollbar) {
+        w = FGUI_SCR_W - 3;
+        /* 'items' argument is round up; for x/y, rounding up is done using (x + y - 1) / y */
+        fgui_scrollbar(w, y, FGUI_SCR_H-y, (strlen(text) + (fgui_lines() * (w / fgui_charwidth())) - 1) / (fgui_lines() * (w / fgui_charwidth())), 
+                                           start / (fgui_lines() * (w / fgui_charwidth())));
+    }
+    else {
+        w = FGUI_SCR_W;
+    }
+
+    x=0;
+    i = start;
+    while(text[i]) {
+        fgui_char(x,y,text[i]);
+        x+=fgui_charwidth();
+        if(x+fgui_charwidth() > w) {
+            y+=fgui_charheight();
+            if(y+fgui_charheight() > FGUI_SCR_H) {
+                i++;
+                break;
+            }
+            x=0;
+        }
+        i++;
+    }
+    return i;
+}
+
 
 int fgui_lines()
 /*
@@ -129,13 +170,13 @@ char fgui_progressbar(int x, int y, int w, int h, unsigned char progress, char s
     int i;
 
     if(h > 4 && w > 4) {
-        /* box */
+        /* Box */
         fgui_lineh(x, y, w);
         fgui_linev(x, y, h);
         fgui_lineh(x, y + h - 1, w);
         fgui_linev(x + w - 1, y, h);
 
-        /* bar */
+        /* Bar */
         if(progress > 100) {
             progress = 100;
         }
@@ -144,7 +185,7 @@ char fgui_progressbar(int x, int y, int w, int h, unsigned char progress, char s
             fgui_lineh(x+2, y+2+i, progress * ((w-4)/100.0));
         }
 
-        /* text */
+        /* Text, if there's enough room */
         if(showText && h-4 > fgui_charheight() && w-4 > fgui_charwidth() * 3) {
             fgui_print(x + (w/2) - fgui_charwidth(), y + (h/2)  - (fgui_charheight()/2), "%d%%", progress);
         }
@@ -154,9 +195,9 @@ char fgui_progressbar(int x, int y, int w, int h, unsigned char progress, char s
     return 0;
 }
 
-char fgui_scrollbar(int x, int y, int h, unsigned char items, unsigned char location)
+char fgui_scrollbar(int x, int y, int h, unsigned int items, unsigned int location)
 /*
-  Draw a vertical scroll bar bar at given x/y. 
+  Draw a vertical scroll bar bar at given x/y location with given height and a width of 3 pixels.
   Returns 1 on success, false otherwise
 */
 {
@@ -171,18 +212,60 @@ char fgui_scrollbar(int x, int y, int h, unsigned char items, unsigned char loca
         fgui_linev(x+1, y+3, h-6);
 
         /* Bottom terminator (\/) */
-        fgui_lineh(x, y+h-1, 3);
-        fgui_pixel(x+1, y+h, FGUI_BLACK);
+        fgui_lineh(x, y+h-2, 3);
+        fgui_pixel(x+1, y+h-1, FGUI_BLACK);
 
         /* Location indicator */
         if(location > items) {
             location = items;
         }
-        indicatorlength = (h-6)/items;
-        fgui_linev(x,     y + 3 + (location * indicatorlength), indicatorlength);
-        fgui_linev(x + 2, y + 3 + (location * indicatorlength), indicatorlength);
+        
+        /* 'indicatorlength' is round up; for x/y, rounding up is done using (x + y - 1) / y */
+        indicatorlength = ((h-6.0) + items - 1)/items;
+        fgui_linev(x,     y + 3 + (location * (h-6.0)/items), indicatorlength);
+        fgui_linev(x + 2, y + 3 + (location * (h-6.0)/items), indicatorlength);
 
         return 1;
+    }
+    return 0;
+}
+
+char fgui_busyindicator(int x, int y, int w, int h, int tick)
+/*
+  Draw busy indicator at given x/y location of w*h pixels.
+  Returns > 0 on success, 0 otherwise. On successive calls, use the return-value of the previous call for the 'tick' argument
+*/
+{
+    int i;
+    int dotspacing = ((w+3-1)/3.0);
+
+    if(tick < 1) {
+        tick = 1;
+    }
+    else if(tick > 3) {
+        tick = 2;
+    }
+
+    if(h > 2 && w > 5) {
+        for(i=0;i<3;i++) {
+            if(i == tick-1) {
+                /* Filled dot */
+                fgui_fillregion(x + (i*dotspacing), y, w/3, h);
+            }
+            else {
+                /* Empty dot */
+                fgui_lineh(x + (i*dotspacing), y, w/3);
+                fgui_linev(x + (i*dotspacing), y, h);
+                fgui_lineh(x + (i*dotspacing), y + h - 1, w/3);
+                fgui_linev(x + (i*dotspacing) + (w/3) - 1, y, h);
+            }
+        }
+
+        tick++;
+        if(tick > 3) {
+            tick = 1;
+        }
+        return tick;
     }
     return 0;
 }
