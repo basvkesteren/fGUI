@@ -126,9 +126,10 @@ int fgui_printblock(int y, char *text, unsigned int start, char showscrollbar)
 
     if(showscrollbar) {
         w = FGUI_SCR_W - 3;
+
         /* 'items' argument is round up; for x/y, rounding up is done using (x + y - 1) / y */
-        fgui_scrollbar(w, y, FGUI_SCR_H-y, (strlen(text) + (fgui_lines() * (w / fgui_charwidth())) - 1) / (fgui_lines() * (w / fgui_charwidth())), 
-                                           start / (fgui_lines() * (w / fgui_charwidth())));
+        fgui_scrollbar(w, y, FGUI_SCR_H-y, (strlen(text) + fgui_blocklength(y, showscrollbar) - 1) / fgui_blocklength(y, showscrollbar), 
+                                           start / fgui_blocklength(y, showscrollbar));
     }
     else {
         w = FGUI_SCR_W;
@@ -152,6 +153,18 @@ int fgui_printblock(int y, char *text, unsigned int start, char showscrollbar)
     return i;
 }
 
+int fgui_blocklength(int y, char showscrollbar)
+/*
+  Returns no. of chars that'll fit in one block
+*/
+{
+    if(showscrollbar) {
+        return ((FGUI_SCR_H-y)/fgui_charheight()) * ((FGUI_SCR_W - 3) / fgui_charwidth());
+    }
+    else {
+        return ((FGUI_SCR_H-y)/fgui_charheight()) * (FGUI_SCR_W / fgui_charwidth());
+    }    
+}
 
 int fgui_lines()
 /*
@@ -216,8 +229,8 @@ char fgui_scrollbar(int x, int y, int h, unsigned int items, unsigned int locati
         fgui_pixel(x+1, y+h-1, FGUI_BLACK);
 
         /* Location indicator */
-        if(location > items) {
-            location = items;
+        if(location >= items-1) {
+            location = items-1;
         }
         
         /* 'indicatorlength' is round up; for x/y, rounding up is done using (x + y - 1) / y */

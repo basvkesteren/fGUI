@@ -33,6 +33,7 @@ void fgui_setprintbuffer(char* buffer, int bufferlength);
 char fgui_print(int x, int y, char *fmt, ...);
 char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char *fmt, ...);
 int fgui_printblock(int y, char *text, unsigned int start, char showscrollbar);
+int fgui_blocklength(int y, char showscrollbar);
 int fgui_lines(void);
 
 char fgui_progressbar(int x, int y, int w, int h, unsigned char progress, char showText);
