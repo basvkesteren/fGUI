@@ -55,13 +55,13 @@ char fgui_print(int x, int y, char *fmt, ...)
     return 0;
 }
 
-char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char *fmt, ...)
+char fgui_printline(int y, fgui_linealignment_t alignment, char invert, char *fmt, ...)
 /*
-  Print a line of text at the given line. This'll clear the whole line before printing the text!
+  Print a line of text at x/y location 0/y. This'll clear the whole line before printing the text!
   Returns 1 on success, false otherwise
 */
 {
-    int x, y;
+    int x;
 
     if(fgui_printbuffer && fgui_printbufferlength) {
         /* Get text-string */
@@ -72,7 +72,7 @@ char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char 
 
         va_end(argpointer);
 
-        /* Determine x/y location */
+        /* Determine x location */
         switch(alignment) {
             case fgui_left:
                 x=0;
@@ -98,7 +98,6 @@ char fgui_printline(int line, fgui_linealignment_t alignment, char invert, char 
             default:
                 return 0;
         }
-        y=line*fgui_charheight();
         
         /* Print text on screen */
         if(invert) {
@@ -164,6 +163,14 @@ int fgui_blocklength(int y, char showscrollbar)
     else {
         return ((FGUI_SCR_H-y)/fgui_charheight()) * (FGUI_SCR_W / fgui_charwidth());
     }    
+}
+
+int fgui_linetoy(unsigned int line)
+/*
+  Convert given y location to a line location, using the active font
+*/
+{
+    return line*fgui_charheight();
 }
 
 int fgui_lines()

@@ -185,10 +185,7 @@ void sprite_finishrow(unsigned char *spritedata, FILE *fptr)
 
     /* Add padding zero's */
     if(spritebitlocation!=7) {
-        while(spritebitlocation>0) {
-            spritedata[spritebytelocation] &= ~(1<<spritebitlocation);
-            spritebitlocation--;
-        }
+        spritedata[spritebytelocation] &= (0xFF<<(spritebitlocation+1));
         spritebitlocation=7;
         spritebytelocation++;
     }

@@ -36,11 +36,17 @@ void fgui_sprite(const int x, const int y, const unsigned char *sprite)
 }
 
 int fgui_spritewidth(const unsigned char *sprite)
+/*
+  Get width of given sprite, in pixels
+*/
 {
     return (sprite[0]<<8) | sprite[1];
 }
 
 int fgui_spriteheight(const unsigned char *sprite)
+/*
+  Get height of given sprite, in pixels
+*/
 {
     return (sprite[2]<<8) | sprite[3];
 }
