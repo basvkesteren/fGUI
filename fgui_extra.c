@@ -37,7 +37,7 @@ void fgui_setprintbuffer(char* buffer, int bufferlength)
 
 char fgui_print(int x, int y, char *fmt, ...)
 /*
-  Print text (printf format) at given x/y location. 
+  Print text (printf format) at given x/y location.
   Returns 1 on success, false otherwise
 */
 {
@@ -98,7 +98,7 @@ char fgui_printline(int y, fgui_linealignment_t alignment, char invert, char *fm
             default:
                 return 0;
         }
-        
+
         /* Print text on screen */
         if(invert) {
             fgui.fgcolor = ~fgui.fgcolor;
@@ -127,7 +127,7 @@ int fgui_printblock(int y, char *text, unsigned int start, char showscrollbar)
         w = FGUI_SCR_W - 3;
 
         /* 'items' argument is round up; for x/y, rounding up is done using (x + y - 1) / y */
-        fgui_scrollbar(w, y, FGUI_SCR_H-y, (strlen(text) + fgui_blocklength(y, showscrollbar) - 1) / fgui_blocklength(y, showscrollbar), 
+        fgui_scrollbar(w, y, FGUI_SCR_H-y, (strlen(text) + fgui_blocklength(y, showscrollbar) - 1) / fgui_blocklength(y, showscrollbar),
                                            start / fgui_blocklength(y, showscrollbar));
     }
     else {
@@ -162,7 +162,7 @@ int fgui_blocklength(int y, char showscrollbar)
     }
     else {
         return ((FGUI_SCR_H-y)/fgui_charheight()) * (FGUI_SCR_W / fgui_charwidth());
-    }    
+    }
 }
 
 int fgui_linetoy(unsigned int line)
@@ -183,7 +183,7 @@ int fgui_lines()
 
 char fgui_progressbar(int x, int y, int w, int h, unsigned char progress, char showText)
 /*
-  Draw a horizontal progress bar at given x/y location of w*h pixels. 
+  Draw a horizontal progress bar at given x/y location of w*h pixels.
   Returns 1 on success, false otherwise
 */
 {
@@ -239,7 +239,7 @@ char fgui_scrollbar(int x, int y, int h, unsigned int items, unsigned int locati
         if(location >= items-1) {
             location = items-1;
         }
-        
+
         /* 'indicatorlength' is round up; for x/y, rounding up is done using (x + y - 1) / y */
         indicatorlength = ((h-6.0) + items - 1)/items;
         fgui_linev(x,     y + 3 + (location * (h-6.0)/items), indicatorlength);
@@ -274,6 +274,7 @@ char fgui_busyindicator(int x, int y, int w, int h, int tick)
             }
             else {
                 /* Empty dot */
+                fgui_clearregion(x + (i*dotspacing), y, w/3, h);
                 fgui_lineh(x + (i*dotspacing), y, w/3);
                 fgui_linev(x + (i*dotspacing), y, h);
                 fgui_lineh(x + (i*dotspacing), y + h - 1, w/3);

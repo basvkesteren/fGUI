@@ -27,7 +27,7 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h)
   Clear a region of the framebuffer at location x,y, with width 'w' and height 'h'
 */
 {
-    unsigned int cw,ch,bytew,bytestart;
+    unsigned int cw,ch,bytestart;
     unsigned char bitmask;
 
     /* Sanity check */
@@ -47,9 +47,8 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h)
         h = FGUI_SCR_H - y;
     }
 
-    /* There are two main-cases here: byte aligned and non-byte aligned regions */
     if(x%8 > 0) {
-        /* Region is not byte-aligned with the framebuffer, bitshifting is needed */
+        /* Region is not byte-aligned with the framebuffer, bitshifting is needed to get the first part */
         bitmask = (FGUI_BLACK>>(x%8));
         if(fgui.fgcolor == FGUI_BLACK) {
             for(ch=0;ch<h;ch++) {
@@ -61,19 +60,12 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h)
                 fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bitstobytesdown(x)] |= bitmask;
             }
         }
-        /* For the remaining part, we only set the startingpoint; the actual copying is done later */
-        bytestart=1;
-    }
-    else {
-        /* Region is byte-aligned with the framebuffer */
-        bytestart=0;
     }
 
-    /* OK, now copy all complete byte; we start at row 'bytestart' */
-    bytew=bitstobytesdown(w);
+    /* OK, now copy all complete bytes */
     for(ch=0;ch<h;ch++) {
-        for(cw=bytestart;cw<bytew;cw++) {
-            fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bitstobytesdown(x)+cw] = ~fgui.fgcolor;
+        for(cw=bitstobytesup(x);cw<bitstobytesdown(x+w); cw++) {
+            fgui.fb[((y+ch)*FGUI_SCR_BYTEW) + cw] = ~fgui.fgcolor;
         }
     }
 
@@ -87,7 +79,7 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h)
                 fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bytestart] &= ~bitmask;
             }
         }
-        else {    
+        else {
             for(ch=0;ch<h;ch++) {
                 fgui.fb[((y+ch)*FGUI_SCR_BYTEW)+bytestart] |= bitmask;
             }
