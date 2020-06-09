@@ -30,6 +30,7 @@ void fgui_clearregion(int x, int y, unsigned int w, unsigned int h);
 void fgui_fillregion(int x, int y, unsigned int w, unsigned int h);
 char fgui_refresh(void);
 void fgui_setcolor(const unsigned char newcolor);
+unsigned char fgui_getcolor(void);
 void fgui_invertcolor(void);
 
 /* Pixel functions */

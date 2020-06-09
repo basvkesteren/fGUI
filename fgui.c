@@ -66,6 +66,14 @@ void fgui_setcolor(const unsigned char newcolor)
     }
 }
 
+unsigned char fgui_getcolor()
+/*
+  Return the current foregroundcolor
+*/
+{
+    return fgui.fgcolor;
+}
+
 void fgui_invertcolor()
 /*
   Invert colors
