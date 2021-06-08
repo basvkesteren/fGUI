@@ -13,7 +13,15 @@
 #define _FGUI_CONFIG_H_
 
 /* Include hardware driver */
+#ifdef FGUI_DISPLAY_WS2812
 #include "hw/ks0108.h"
+#elif defined FGUI_DISPLAY_SSD1322
+#include "hw/ssd1322.h"
+#elif defined FGUI_DISPLAY_UART
+#include "hw/uart_display.h"
+#elif defined FGUI_DISPLAY_WS2812
+#include "hw/ws2812.h"
+#endif
 
 typedef signed short fgui_location;
 

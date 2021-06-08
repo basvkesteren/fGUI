@@ -14,7 +14,14 @@
 
 #include <ssp.h>
 #include <delay.h>
-#include <hardware/io.h>
+#include <io.h>
+
+/* As defined in io.h */
+#define ssd1322_pin_select()            DISPLAY_CS_ACTIVATE()
+#define ssd1322_pin_deselect()          DISPLAY_CS_DEACTIVATE()
+#define ssd1322_pin_command()           DISPLAY_COMMAND()
+#define ssd1322_pin_data()              DISPLAY_DATA()
+#define ssd1322_ssp_put(x)              DISPLAY_SSP(x)
 
 #define SSD1322_CMD_COLUMN_ADDRESS      0x15
 #define SSD1322_CMD_WRITE_RAM           0x5C
@@ -44,16 +51,10 @@
 #define SSD1322_CMD_ENHANCEMENT_B       0xD1
 #define SSD1322_CMD_LOCK                0xFD
 
-/* As defined in hardware/io.h */
-#define ssd1322_pin_select()            DISPLAY_CS_ACTIVATE()
-#define ssd1322_pin_deselect()          DISPLAY_CS_DEACTIVATE()
-#define ssd1322_pin_command()           DISPLAY_COMMAND()
-#define ssd1322_pin_data()              DISPLAY_DATA()
-
 static void ssd1322_tx(unsigned char* data, int length)
 {
     for(int i=0;i<length;i++) {
-        ssp1_put(data[i]);
+        ssd1322_ssp_put(data[i]);
     }
 }
 
