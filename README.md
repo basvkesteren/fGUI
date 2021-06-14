@@ -32,8 +32,17 @@ Works for me (tm)
  
 ## How to use
 
-Place the fGUI sources in a subfolder of your project, include the Makefile.inc
-file in your Makefile (which assumes SRC defines the .c files to compile)
+Place the fGUI sources in a subfolder of your project ('fgui' would make sense..), then include
+something like the following snippet in your Makefile
+```
+    # Pick a display (see the hw folder)
+    FGUI_DISPLAY = ssd1322
+    # Include the fGUI makefile (change subfolder if you didn't pick 'fgui'!)
+    include fgui/makefile.inc
+    # The makefile has defined FGUI_SRC (the files to compile) and FGUI_DEFINES (defines that must exist during compilation)
+    SRC += $(FGUI_SRC)
+    DEFINES += $(patsubst %,-D%,$(FGUI_DEFINES))
+```
 
 Include fgui.h and any font/sprite header files you've generated in your code,
 and define the framebuffer ('unsigned char framebuffer[FGUI_FBSIZE];').
